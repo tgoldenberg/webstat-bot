@@ -42,22 +42,24 @@ slackClient.on('message', function(message){
     });
   };
   console.log('CHANNEL', channel);
-  if (/development/.test(text)){
-    CONNECTION_STRING = developmentCreds;
-    sendTypingMessage();
-    findData(CONNECTION_STRING, (res) => {
-      console.log('RESULT', res);
-      console.log('CHANNEL', channel);
-      slackClient.sendMessage('HELLO', channel);
-    });
-  } else {
-    CONNECTION_STRING = stageCreds;
-    sendTypingMessage();
-    findData(CONNECTION_STRING, (res) => {
-      slackClient.sendMessage(res, channel);
-    });
-
+  if (BOT_MENTION_REGEX.test(text)){
+    if (/development/.test(text)){
+      CONNECTION_STRING = developmentCreds;
+      sendTypingMessage();
+      findData(CONNECTION_STRING, (res) => {
+        console.log('RESULT', res);
+        console.log('CHANNEL', channel);
+        slackClient.sendMessage('HELLO', channel);
+      });
+    } else {
+      CONNECTION_STRING = stageCreds;
+      sendTypingMessage();
+      findData(CONNECTION_STRING, (res) => {
+        slackClient.sendMessage(res, channel);
+      });
+    }
   }
+
 });
 
 slackClient.start();
