@@ -1,0 +1,19 @@
+{
+  "name": "webstat-bot",
+  "version": "1.0.0",
+  "description": "",
+  "main": "index.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "author": "tgoldenberg",
+  "license": "ISC",
+  "dependencies": {
+    "@slack/client": "^3.5.1",
+    "moment": "^2.14.1",
+    "mongodb": "^2.2.2",
+    "node-rest-client": "^2.0.1",
+    "parse-domain": "^0.2.1",
+    "valid-url": "^1.0.9"
+  }
+}
