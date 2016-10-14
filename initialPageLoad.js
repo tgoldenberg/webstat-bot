@@ -68,8 +68,26 @@ var testInitialPageLoad = function(environment) {
         day.setMilliseconds(0);
         var nextDay = new Date(date.valueOf());
         nextDay.setDate(date);
-        LoadSpeeds.find({date: { $gte: day.valueOf(), $lte: nextDay.valueOf() }}).toArray().then(speeds => {
-          console.log('LOAD SPEEDS', speeds);
+        LoadSpeeds.aggregate([
+          {
+            $match: {
+              date: { $gte: day.valueOf() }
+            }
+          },
+          {
+            $group: {
+              _id: null,
+              "avg_speed": { $avg: "$DOMLoaded" }
+            }
+          }
+        ], function(err, res) {
+          if (res && res[0] && res[0].avg_speed) {
+            resolve('Average page speed of ' + res[0].avg_speed/1000 + ' seconds');
+            console.log('RESULT', res[0].avg_speed /1000);
+          } else {
+            resolve('Could not find pageload speeds');
+          }
+          db.close();
         })
       }
     });
@@ -77,4 +95,7 @@ var testInitialPageLoad = function(environment) {
   return promise;
 };
 
-testInitialPageLoad('development');
+// testInitialPageLoad('development');
+module.exports = {
+  testInitialPageLoad,
+};

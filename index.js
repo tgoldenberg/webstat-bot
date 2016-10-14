@@ -34,7 +34,7 @@ slackClient.on(CLIENT_EVENTS.RTM.AUTHENTICATED, function(rtmStartData){
 
 var CONNECTION_STRING;
 
-var InitialPageLoadTask = cron.schedule('* * * * *', function() {
+var InitialPageLoadTask = cron.schedule('0 8 * * *', function() {
   var channel = 'C2PGA3VLM';
   let promise = new Promise((resolve, reject) => {
     testInitialPageLoad('development').then(message => {
@@ -73,7 +73,7 @@ var InitialPageLoadTask = cron.schedule('* * * * *', function() {
   })
 });
 
-var ClusteringTask = cron.schedule('48 14 * * *', function() {
+var ClusteringTask = cron.schedule('0 8 * * *', function() {
   var channel = 'C2PGA3VLM';
   let promise = new Promise((resolve, reject) => {
     testClustering('development').then(message => {

@@ -32,7 +32,7 @@ var STAGING = {
 };
 var PRODUCTION = {
   MONGO_URL: process.env.PRODUCTION_MONGO_URL,
-  USER_ID: '',
+  USER_ID: "Eq2zdhhuEoNFxbPKQ",
   USER_EMAIL: 'monitoring@agolo.com',
   PERCOLATOR_ENDPOINT: process.env.PRODUCTION_PERCOLATOR_ENDPOINT,
   RABBITMQ_CONNECTION_STRING: process.env.PRODUCTION_RABBITMQ_CONNECTION_STRING,
@@ -206,6 +206,7 @@ var testClustering = function(environment) {
   return promise;
 };
 
+testClustering('production');
 module.exports = {
   testClustering
 };
