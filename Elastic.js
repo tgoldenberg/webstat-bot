@@ -109,4 +109,4 @@ class ElasticSearch{
 
 const Elastic = new ElasticSearch();
 
-export default Elastic;
+module.exports = Elastic;
