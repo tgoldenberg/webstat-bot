@@ -8,7 +8,8 @@ var btoa = require('btoa');
 var _ = require('underscore');
 var PERCOLATOR_AUTH = btoa(`${PERCOLATOR_USERNAME}:${PERCOLATOR_PASSWORD}`);
 
-var Elastic = require('./Elastic');
+var Elastic = require('./Elastic'); // constructor for forming feed queries
+
 var PERCOLATOR_HEADERS = {
   'Content-Type': 'application/json',
   'Authorization': `Basic ${PERCOLATOR_AUTH}`
@@ -16,6 +17,7 @@ var PERCOLATOR_HEADERS = {
 
 var MongoClient = mongodb.MongoClient;
 
+// various credentials for different environments
 var DEVELOPMENT = {
   MONGO_URL: process.env.DEVELOPMENT_MONGO_URL,
   USER_ID: 'QRpriCSDvCbK9tJu8',
@@ -38,29 +40,46 @@ var PRODUCTION = {
   RABBITMQ_CONNECTION_STRING: process.env.PRODUCTION_RABBITMQ_CONNECTION_STRING,
 };
 
-function queryClusters(collection, feedId, db, createdAt, callback) {
+const INTERVAL_TIME = 5000;
+const MAX_TIME = 1000*60*30;
+const MAX_MINUTES = 30;
+
+// set polling to watch for new clusters and print message
+function queryClusters({ cluster, feedId, db, createdAt, envArg, callback }) {
   console.log('Collection', feedId, createdAt);
   var interval = setInterval(() => {
-    collection.count({ feed_id: feedId }, function(err, count) {
+    cluster.count({ feed_id: feedId }, function(err, count) {
       console.log('COUNT', count);
       if (count > 0) {
         clearInterval(interval);
         console.log('Found clusters for Feed ID ', feedId);
         var diff = new Date().valueOf() - createdAt.valueOf();
         console.log('Time diff: ', (diff/1000) + ' seconds');
-        collection.deleteOne({_id: feedId}, (err, res) => {
-          callback('Time diff: ' + (diff/1000) + ' seconds');
+        cluster.deleteOne({_id: feedId}, (err, res) => {
+          var message = `
+Just tested clustering on ${envArg} environment.
+> It took *${diff/1000} seconds* before the first cluster was found.
+> Great job!
+👍
+`;
+          callback(message);
         })
       }
     })
-  }, 5000)
+  }, INTERVAL_TIME)
   setTimeout(() => {
     clearInterval(interval);
-    console.log('Could not find any clusters in last 30 minutes.');
-    callback('Could not find any clusters after waiting 30 minutes :/');
-  }, 1000*60*30)
-}
+    var message = `
+Clustering not working on ${envArg} environment.
+> We checked for ${MAX_MINUTES} minutes and could not find any clusters for out test feed.
+> Should we be worried?
+😟
+`;
+    callback(message);
+  }, MAX_TIME)
+};
 
+// main function that creates a new feed and then checks for clusters
 var testClustering = function(environment) {
   let promise = new Promise((resolve, reject) => {
     var envArg = 'development'
@@ -184,21 +203,24 @@ var testClustering = function(environment) {
           console.log('PARAMS');
           var response = rp(`${PERCOLATOR_ENDPOINT}/${feedOptions._id}`, params);
           console.log('Percolator response', response.statusCode);
-          queryClusters(Cluster, feedId, db, new Date(), (message) => {
-            Feed.update({ _id: feedId }, {
-              $set: {
-                deleted: true
-              }
-            }).then(() => {
-              db.close(true, (err, res) => {
-                if (err) { console.log('ERR:', err); }
-                if (process.argv[2]) {
-                  process.exit(0);
-                }
+
+          var options = {
+            cluster: Cluster,
+            createdAt: new Date(),
+            envArg: envArg,
+            callback: (message) => {
+              Feed.update({ _id: feedId }, {
+                $set: { deleted: true }
+              })
+              .then(() => {
+                resolve(message);
+                db.close(true, (err, res) => process.exit(0))
               });
-              resolve(message);
-            })
-          });
+            },
+            feedId,
+            db,
+          };
+          queryClusters(options);
         });
       }
     });

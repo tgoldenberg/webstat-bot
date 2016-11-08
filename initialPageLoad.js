@@ -68,6 +68,7 @@ var testInitialPageLoad = function(environment) {
         day.setMilliseconds(0);
         var nextDay = new Date(date.valueOf());
         nextDay.setDate(date);
+        var count = LoadSpeeds.find({ date: { $gte: day.valueOf() }}).count();
         LoadSpeeds.aggregate([
           {
             $match: {
@@ -82,10 +83,22 @@ var testInitialPageLoad = function(environment) {
           }
         ], function(err, res) {
           if (res && res[0] && res[0].avg_speed) {
-            resolve('Average page speed of ' + res[0].avg_speed/1000 + ' seconds');
+            var message = `
+Just tested average initial page load for ${envArg} environment. Here are the results! \n
+> Average initial page load: *${res[0].avg_speed/1000}seconds}*
+> Compiled from *${count}* cases
+👍
+`;
+            resolve(message);
             console.log('RESULT', res[0].avg_speed /1000);
           } else {
-            resolve('Could not find pageload speeds');
+            var message = `
+That's strange.
+> I couldn't find any page views for ${envArg} environment.
+> Unable to determine average initial page load speed.
+😞
+`;
+            resolve(message);
           }
           db.close();
         })

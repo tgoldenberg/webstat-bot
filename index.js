@@ -38,7 +38,6 @@ var InitialPageLoadTask = cron.schedule('0 8 * * *', function() {
   var channel = 'C2PGA3VLM';
   let promise = new Promise((resolve, reject) => {
     testInitialPageLoad('development').then(message => {
-      slackClient.sendMessage('Results for development initial page load...', channel);
       slackClient.sendMessage(message, channel);
       resolve();
     })
@@ -51,7 +50,6 @@ var InitialPageLoadTask = cron.schedule('0 8 * * *', function() {
     let p2 = new Promise((resolve, reject) => {
       testInitialPageLoad('staging').then(message => {
         console.log('MESSAGE', message);
-        slackClient.sendMessage('Results for staging initial page load...', channel);
         slackClient.sendMessage(message, channel);
         resolve();
       })
