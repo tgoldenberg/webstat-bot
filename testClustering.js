@@ -57,7 +57,7 @@ function queryClusters({ cluster, feedId, db, createdAt, envArg, callback }) {
         console.log('Time diff: ', (diff/1000) + ' seconds');
         cluster.deleteOne({_id: feedId}, (err, res) => {
           var message = `
-Just tested clustering on ${envArg} environment.
+Just tested clustering on *${envArg} environment*.
 > It took *${diff/1000} seconds* before the first cluster was found.
 > Great job!
 👍
@@ -70,8 +70,8 @@ Just tested clustering on ${envArg} environment.
   setTimeout(() => {
     clearInterval(interval);
     var message = `
-Clustering not working on ${envArg} environment.
-> We checked for ${MAX_MINUTES} minutes and could not find any clusters for out test feed.
+Clustering not working on *${envArg} environment*.
+> We checked for *${MAX_MINUTES} minutes* and could not find any clusters for out test feed.
 > Should we be worried?
 😟
 `;
