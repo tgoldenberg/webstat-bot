@@ -114,7 +114,6 @@ var testClustering = function(environment) {
         /* Construct Feed Data */
         Feed = db.collection('feeds');
         Cluster = db.collection('clusters');
-        console.log('PROCESS', process.argv);
 
         var testFeed = {
           name                : 'Test',
@@ -214,7 +213,7 @@ var testClustering = function(environment) {
               })
               .then(() => {
                 resolve(message);
-                db.close(true, (err, res) => process.exit(0))
+                db.close(true, (err, res) => console.log('CLOSING DB', err, res))
               });
             },
             feedId,
