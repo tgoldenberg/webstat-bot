@@ -127,6 +127,14 @@ slackClient.on('message', function(message){
   };
   console.log('CHANNEL', channel);
   if (BOT_MENTION_REGEX.test(text)){
+    if (/clustering/.test(text)) {
+      var message = `
+        Please be patient while I check clustering.
+        > It can take up to *30 minutes*.
+        💪
+      `;
+      slackClient.sendMessage(message, channel);
+    }
     if (/clustering development/.test(text)){
       /* Find how quickly clustering works for a development feed */
       console.log('DEVELOPMENT SLACKBOT', text);
