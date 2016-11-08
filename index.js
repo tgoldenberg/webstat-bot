@@ -129,9 +129,9 @@ slackClient.on('message', function(message){
   if (BOT_MENTION_REGEX.test(text)){
     if (/clustering/.test(text)) {
       var message = `
-        Please be patient while I check clustering.
-        > It can take up to *30 minutes*.
-        💪
+Please be patient while I check clustering.
+> It can take up to *30 minutes*.
+💪
       `;
       slackClient.sendMessage(message, channel);
     }
