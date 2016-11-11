@@ -59,9 +59,8 @@ var InitialPageLoadTask = cron.schedule('0 8 * * *', function() {
       })
     })
     p2.then(() => {
-      testClustering('production').then(message => {
+      testInitialPageLoad('production').then(message => {
         console.log('MESSAGE', message);
-        slackClient.sendMessage('Results for production initial page load...', channel);
         slackClient.sendMessage(message, channel);
       })
       .catch(err => {

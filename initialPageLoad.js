@@ -86,10 +86,10 @@ var testInitialPageLoad = function(environment) {
             LoadSpeeds.find({ date: { $gte: day.valueOf() }}).count()
             .then(count => {
               var message = `
-  Just tested average initial page load for *${envArg} environment*. Here are the results! \n
-  > Average initial page load: *${res[0].avg_speed/1000}seconds}*
-  > Compiled from *${count}* cases
-  👍
+Just tested average initial page load for *${envArg} environment*. Here are the results! \n
+> Average initial page load: *${res[0].avg_speed/1000} seconds*
+> Compiled from *${count}* cases
+👍
   `;
               resolve(message);
               console.log('RESULT', res[0].avg_speed /1000);
